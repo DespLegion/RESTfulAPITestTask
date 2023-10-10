@@ -1,0 +1,9 @@
+python-dotenv
+Django
+fastapi
+jinja2
+pydantic
+uvicorn
+psycopg2
+pyjwt
+passlib[bcrypt]

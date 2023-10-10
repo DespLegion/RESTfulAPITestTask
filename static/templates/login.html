@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title></title>
+
+	</head>
+	<body>
+		<div>
+		    <form id="login_form">
+		        <p>
+		            <label for="text">Имя пользователя</label>
+		            <input type="text" id="start_date" name="username"/>
+		        </p>
+		        <p>
+		            <label for="text">Пароль</label>
+		            <input type="password" id="end_date" name="password"/>
+		        </p>
+		        <p>
+		            <button type="submit">Авторизоваться</button>
+		        </p>
+		    </form>
+		</div>
+	</body>
+	<script type="module">
+		async function post_login(login_data) {
+	        let resp = await fetch(
+	            "http://127.0.0.1:8000/api/login", {
+	                method: "POST",
+	                headers: {
+	                    "Content-Type": "application/json;charset=utf-8"
+	                },
+	                body: JSON.stringify(login_data)
+	            }
+	        )
+	        if (resp.ok) {
+	        	let content = await resp.json()
+	        	var access_token = content.access_token
+	        	document.cookie = "Authorization=Bearer " + access_token
+				alert("Вы успешно авторизовались!");
+	        } else {
+	        	alert("Неверный логин или пароль!");
+	        }
+	    }
+
+	    const form = document.getElementById('login_form');
+	    form.addEventListener('submit', getFormValue);
+
+	    function getFormValue(event) {
+	        event.preventDefault();
+	        var username_f = form.querySelector('[name="username"]')
+	        var password_f = form.querySelector('[name="password"]')
+	        var login_form_data = {
+	            username: username_f.value,
+	            password: password_f.value,
+	        }
+	        post_login(login_form_data);
+	    }
+	</script>
+</html>

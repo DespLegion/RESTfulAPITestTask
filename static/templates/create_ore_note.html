@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script type="text/javascript" src="static/templates/static/index.js"></script>
+        <link rel="stylesheet" href="static/templates/static/jspreadsheet.css" type="text/css" />
+
+        <script src="https://jsuites.net/v4/jsuites.js"></script>
+        <link rel="stylesheet" href="https://jsuites.net/v4/jsuites.css" type="text/css" />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Material+Icons" />
+
+        <link rel="stylesheet" type="text/css" href="http://weareoutman.github.io/clockpicker/dist/jquery-clockpicker.min.css" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="http://weareoutman.github.io/clockpicker/dist/jquery-clockpicker.min.js"></script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title></title>
+    </head>
+    <body>
+        <div id="spreadsheet3"></div>
+        <script>
+            var myNewTable = jspreadsheet(document.getElementById('spreadsheet3'), {
+                data:[[]],
+                columns: [
+                        { type: 'text', title:'Шахта', width:300 },
+                        { type: 'text', title:'Железо', width:100, },
+                        { type: 'text', title:'Кремний', width:100, },
+                        { type: 'text', title:'Алюминий', width:100, },
+                        { type: 'text', title:'Кальций', width:100, },
+                        { type: 'text', title:'Сера', width:100, },
+                        { type: 'calendar', title:'Дата', width:150, options: { format:'YYYY/MM/DD' }},
+                    ]
+                });
+            function get_data_from_table() {
+                var table_data = myNewTable.getJson()
+                var json_table_data = {
+                            "mine_name": table_data[0][0],
+                            "iron_concentration": table_data[0][1],
+                            "silicon_concentration": table_data[0][2],
+                            "aluminum_concentration": table_data[0][3],
+                            "calcium_concentration": table_data[0][4],
+                            "sulfur_concentration": table_data[0][5],
+                            "concentration_date": table_data[0][6],
+                        }
+                post_data(JSON.stringify(json_table_data))
+            }
+            async function post_data(json_data) {
+                let resp = await fetch(
+                    "http://127.0.0.1:8000/api/create_ore_concentration_note", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json;charset=utf-8"
+                        },
+                        body: json_data
+                    }
+                )
+                let decode_resp = await resp.json()
+                if (resp.ok) {
+                    alert("данные успешно сохранены в базу данных. ID записи - " + decode_resp.id);
+                } else {
+                    if (resp.status == 422) {
+                        alert("Ошибка валидации введенных данных " + decode_resp.detail[0].loc[1] + " - " + decode_resp.detail[0].msg);
+                    } else {
+                        alert("Ошибка при добавлении записи в базу данных! " + decode_resp.detail);
+                    }
+                }
+            }
+        </script>
+        <div>
+            <button onclick="myNewTable.insertRow()">Добавить новый ряд в конец таблицы</button>
+            <button onclick="myNewTable.deleteRow();">Удалить последний ряд из таблицы</button>
+        </div>
+        <div>
+            <button type="submit" onclick="get_data_from_table()">Отправить</button>
+        </div>
+    </body>
+</html>

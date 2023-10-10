@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script type="text/javascript" src="static/templates/static/index.js"></script>
+        <link rel="stylesheet" href="static/templates/static/jspreadsheet.css" type="text/css" />
+
+        <script src="https://jsuites.net/v4/jsuites.js"></script>
+        <link rel="stylesheet" href="https://jsuites.net/v4/jsuites.css" type="text/css" />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Material+Icons" />
+
+        <link rel="stylesheet" type="text/css" href="http://weareoutman.github.io/clockpicker/dist/jquery-clockpicker.min.css" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="http://weareoutman.github.io/clockpicker/dist/jquery-clockpicker.min.js"></script>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title></title>
+    </head>
+    <body>
+        <div id="spreadsheet2"></div>
+        <script type="module">
+            async function get_big_data(form_data) {
+                let resp = await fetch(
+                    "http://127.0.0.1:8000/api/get_ore_concentration_note", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json;charset=utf-8"
+                        },
+                        body: JSON.stringify(form_data)
+                    }
+                )
+                return await resp.json()
+            }
+
+            var myNewTable = jspreadsheet(document.getElementById('spreadsheet2'), {
+                data: [[]],
+                columns: [
+                        { type: 'text', title:'Шахта', width:300 },
+                        { type: 'text', title:'Железо', width:100, },
+                        { type: 'text', title:'Кремний', width:100, },
+                        { type: 'text', title:'Алюминий', width:100, },
+                        { type: 'text', title:'Кальций', width:100, },
+                        { type: 'text', title:'Сера', width:100, },
+                        { type: 'text', title:'Дата', width:150, },
+                    ]
+                });
+            const form = document.getElementById('data_range_from');
+            form.addEventListener('submit', getFormValue);
+
+            async function getFormValue(event) {
+                event.preventDefault();
+                let start_date_f = form.querySelector('[name="start_date"]')
+                let end_date_f = form.querySelector('[name="end_date"]')
+                let form_data = {
+                    start_date: start_date_f.value,
+                    end_date: end_date_f.value,
+                }
+                let new_table_data = await get_big_data(form_data)
+                let new_table_data_parse = []
+                for (let i of new_table_data["notes"]) {
+                    new_table_data_parse.push(
+                        [
+                            i["mine name"],
+                            i["iron concentration"],
+                            i["silicon concentration"],
+                            i["aluminum concentration"],
+                            i["calcium concentration"],
+                            i["sulfur concentration"],
+                            i["concentration date"],
+                        ]
+                    )
+                }
+                myNewTable.setData(new_table_data_parse);
+            }
+        </script>
+        <div>
+            <form id="data_range_from">
+                <p>
+                    <label for="date">С: </label>
+                    <input type="date" id="start_date" name="start_date"/>
+                    <label for="date">По: </label>
+                    <input type="date" id="end_date" name="end_date"/>
+                </p>
+                <p>
+                    <button type="submit">Обновить таблицу</button>
+                </p>
+            </form>
+        </div>
+    </body>
+</html>
