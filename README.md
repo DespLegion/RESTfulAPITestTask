@@ -110,21 +110,32 @@ _________________
 Несколько скриншотов тестов `Postman`:
 
 Успешная регистрация
+
 ![](https://i.ibb.co/KsQhzLv/postman-register.jpg)
 
+
 Неудачная регистрация (пользователь с таким логином уже есть)
+
 ![](https://i.ibb.co/S0vZfQz/postman-bad-register.jpg)
 
+
 Успешный логин
+
 ![](https://i.ibb.co/4WQDcJY/postman-login.jpg)
 
+
 Неудачный логин
+
 ![](https://i.ibb.co/KWrfXXD/postman-bad-login.jpg)
 
+
 Успешное получение записей о концентрации руд за определенный промежуток времени
+
 ![](https://i.ibb.co/DwPVfDH/postman-get-ore.jpg)
 
+
 Неудачная попытка добавить новую запись о концентрации руд (Для это Шахты и на эту дату уже есть запись)
+
 ![](https://i.ibb.co/GHfNhDM/postman-bad-create-ore.jpg)
 
 ___________
